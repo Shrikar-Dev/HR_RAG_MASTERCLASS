@@ -57,7 +57,7 @@ import os
 
 os.environ["LANGCHAIN_TRACING_V2"] = "true"
 os.environ["LANGCHAIN_PROJECT"] = "zyro_rag_challenge"
-os.environ["LANGSMITH_ENDPOINT"] = "https://apac.api.smith.langchain.com"
+os.environ["LANGSMITH_ENDPOINT"] = "https://api.smith.langchain.com"
 
 
 from langchain_groq import ChatGroq
