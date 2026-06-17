@@ -42,7 +42,11 @@ def load_vectorstore():
 vectorstore = load_vectorstore()
 
 retriever = vectorstore.as_retriever(
-    search_kwargs={"k": 4}
+    search_type="mmr",
+    search_kwargs={
+        "k": 6,
+        "fetch_k": 20
+    }
 )
 import os
 from dotenv import load_dotenv
