@@ -140,7 +140,9 @@ Q: Best strategy to rank up in Valorant? -> NO
 Q: Can I expense a client dinner? -> YES
 Q: What's the weather today? -> NO
 """
-
+REFUSAL_MESSAGE = (
+    "Sorry, I can only answer questions related to Zyro Dynamics HR policies and procedures."
+)
 
 def ask_bot(question: str):
     decision = llm.invoke(
