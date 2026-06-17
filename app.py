@@ -25,8 +25,8 @@ def load_vectorstore():
     documents = loader.load()
 
     splitter = RecursiveCharacterTextSplitter(
-        chunk_size=700,
-        chunk_overlap=150
+        chunk_size=1000,
+        chunk_overlap=200
     )
 
     chunks = splitter.split_documents(documents)
@@ -44,10 +44,9 @@ vectorstore = load_vectorstore()
 retriever = vectorstore.as_retriever(
     search_type="mmr",
     search_kwargs={
-    "k": 8,
-    "fetch_k": 30,
-    "lambda_mult": 0.3
-}
+        "k": 6,
+        "fetch_k": 20
+    }
 )
 import os
 from dotenv import load_dotenv
@@ -66,7 +65,7 @@ from langchain_groq import ChatGroq
 
 
 llm = ChatGroq(
-    model="llama-3.1-8b-instant",
+    model="llama-3.3-70b-versatile",
     temperature=0,
     max_tokens=512
 )
@@ -74,14 +73,15 @@ llm = ChatGroq(
 RAG_PROMPT = ChatPromptTemplate.from_template("""
 You are an HR assistant for Zyro Dynamics.
 
-Answer ONLY from the provided context.
+Answer the question using ONLY the provided context.
 
-If the answer is present across multiple chunks,
-combine the information into a complete answer.
+If the context contains partial information, provide the best possible answer based on the available information.
 
-If no relevant information exists in the context,
-respond:
+Summarize relevant details when appropriate.
+
+Only respond with:
 "I could not find that information in the HR policy documents."
+when the context contains no relevant information at all.
 
 Context:
 {context}
