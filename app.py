@@ -1,3 +1,5 @@
+# TEST_DO_NOT_DELETE
+
 from unittest import result
 
 import streamlit as st
@@ -25,8 +27,8 @@ def load_vectorstore():
     documents = loader.load()
 
     splitter = RecursiveCharacterTextSplitter(
-        chunk_size=1000,
-        chunk_overlap=200
+        chunk_size=700,
+        chunk_overlap=150
     )
 
     chunks = splitter.split_documents(documents)
@@ -73,15 +75,16 @@ llm = ChatGroq(
 RAG_PROMPT = ChatPromptTemplate.from_template("""
 You are an HR assistant for Zyro Dynamics.
 
-Answer the question using ONLY the provided context.
+Answer ONLY from the provided context. Do not use any outside knowledge or assumptions, even if you are confident in the answer.
 
-If the context contains partial information, provide the best possible answer based on the available information.
+If the answer is present across multiple chunks, combine the information into a complete answer.
 
-Summarize relevant details when appropriate.
+If the context only partially answers the question, answer that part and clearly state what information is missing.
 
-Only respond with:
+If no relevant information exists in the context, respond:
 "I could not find that information in the HR policy documents."
-when the context contains no relevant information at all.
+
+Keep answers concise. Use bullet points when listing multiple items.
 
 Context:
 {context}
