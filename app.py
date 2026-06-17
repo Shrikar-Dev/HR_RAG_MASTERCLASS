@@ -73,15 +73,15 @@ llm = ChatGroq(
 RAG_PROMPT = ChatPromptTemplate.from_template("""
 You are an HR assistant for Zyro Dynamics.
 
-Answer the question using ONLY the provided context.
+Answer the question using ONLY the provided context. If the question has 
+multiple parts, address each part explicitly using relevant information 
+from across all provided chunks — do not ignore parts of the question.
 
-If the context contains partial information, provide the best possible answer based on the available information.
+If the context contains partial information, give the best answer possible 
+from what's available and note what's missing.
 
-Summarize relevant details when appropriate.
-
-Only respond with:
-"I could not find that information in the HR policy documents."
-when the context contains no relevant information at all.
+Only respond with "I could not find that information in the HR policy documents." 
+when the context contains absolutely no relevant information.
 
 Context:
 {context}
@@ -126,20 +126,20 @@ def rag_chain(question: str):
 
 
 
-OOS_PROMPT = """
-You are a classifier.
+OOS_PROMPT = """You are a strict binary classifier for an HR assistant.
 
-Determine if the question is related to Zyro Dynamics HR policies,
-employees, leave, attendance, payroll, benefits, conduct, onboarding,
-security, travel, work-from-home, or company procedures.
+Decide if the question is about Zyro Dynamics HR policy, employees, leave, 
+attendance, payroll, benefits, conduct, onboarding, security, travel, 
+work-from-home, or company procedures.
 
-Respond only with YES or NO.
+Respond with EXACTLY one word: YES or NO. No explanation, no punctuation.
+
+Examples:
+Q: What is the leave approval process? -> YES
+Q: Best strategy to rank up in Valorant? -> NO
+Q: Can I expense a client dinner? -> YES
+Q: What's the weather today? -> NO
 """
-
-
-REFUSAL_MESSAGE = (
-    "Sorry, I can only answer questions related to Zyro Dynamics HR policies and procedures."
-)
 
 
 def ask_bot(question: str):
