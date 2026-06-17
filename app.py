@@ -25,8 +25,8 @@ def load_vectorstore():
     documents = loader.load()
 
     splitter = RecursiveCharacterTextSplitter(
-        chunk_size=1000,
-        chunk_overlap=200
+        chunk_size=700,
+        chunk_overlap=150
     )
 
     chunks = splitter.split_documents(documents)
@@ -73,15 +73,14 @@ llm = ChatGroq(
 RAG_PROMPT = ChatPromptTemplate.from_template("""
 You are an HR assistant for Zyro Dynamics.
 
-Answer the question using ONLY the provided context.
+Answer ONLY from the provided context.
 
-If the context contains partial information, provide the best possible answer based on the available information.
+If the answer is present across multiple chunks,
+combine the information into a complete answer.
 
-Summarize relevant details when appropriate.
-
-Only respond with:
+If no relevant information exists in the context,
+respond:
 "I could not find that information in the HR policy documents."
-when the context contains no relevant information at all.
 
 Context:
 {context}
