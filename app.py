@@ -25,8 +25,8 @@ def load_vectorstore():
     documents = loader.load()
 
     splitter = RecursiveCharacterTextSplitter(
-        chunk_size=700,
-        chunk_overlap=150
+        chunk_size=1000,
+        chunk_overlap=200
     )
 
     chunks = splitter.split_documents(documents)
@@ -43,11 +43,9 @@ vectorstore = load_vectorstore()
 
 retriever = vectorstore.as_retriever(
     search_type="mmr",
-    search_kwargs={
-        "k": 6,
-        "fetch_k": 20
-    }
+    search_kwargs={"k": 8, "fetch_k": 30, "lambda_mult": 0.7}
 )
+
 import os
 from dotenv import load_dotenv
 
@@ -65,7 +63,7 @@ from langchain_groq import ChatGroq
 
 
 llm = ChatGroq(
-    model="llama-3.1-8b-instant",
+    model="openai/gpt-oss-120b",
     temperature=0,
     max_tokens=512
 )
@@ -73,9 +71,8 @@ llm = ChatGroq(
 RAG_PROMPT = ChatPromptTemplate.from_template("""
 You are an HR assistant for Zyro Dynamics.
 
-Answer the question using ONLY the provided context. If the question has 
-multiple parts, address each part explicitly using relevant information 
-from across all provided chunks — do not ignore parts of the question.
+Answer the question using ONLY the provided context. Answer comprehensively, including all relevant details from the context. 
+For multi-part questions, address every part explicitly.
 
 If the context contains partial information, give the best answer possible 
 from what's available and note what's missing.
