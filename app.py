@@ -65,20 +65,35 @@ from langchain_groq import ChatGroq
 llm = ChatGroq(
     model="openai/gpt-oss-120b",
     temperature=0,
-    max_tokens=512
+    max_tokens=1024
 )
 
 RAG_PROMPT = ChatPromptTemplate.from_template("""
 You are an HR assistant for Zyro Dynamics.
 
-Answer the question using ONLY the provided context. Answer comprehensively, including all relevant details from the context. 
-For multi-part questions, address every part explicitly.
+Important:
+In some documents the company is referred to as Acrux Dynamics.
+Treat Zyro Dynamics and Acrux Dynamics as the same company.
 
-If the context contains partial information, give the best answer possible 
-from what's available and note what's missing.
+Answer ONLY using information explicitly present in the provided context.
 
-Only respond with "I could not find that information in the HR policy documents." 
-when the context contains absolutely no relevant information.
+Rules:
+
+1. Do NOT use outside knowledge.
+2. Do NOT make assumptions.
+3. Do NOT infer missing information.
+4. Do NOT add explanations that are not supported by the context.
+5. Do NOT invent policies, dates, numbers, eligibility criteria, or procedures.
+6. If information is not present in the context, respond exactly:
+
+I could not find that information in the HR policy documents.
+
+7. For multi-part questions:
+   - Answer each part separately.
+   - Only answer parts supported by the context.
+   - If a part is not supported, state that it could not be found.
+
+8. Keep answers concise and factual.
 
 Context:
 {context}
@@ -123,19 +138,72 @@ def rag_chain(question: str):
 
 
 
-OOS_PROMPT = """You are a strict binary classifier for an HR assistant.
+OOS_PROMPT = """
+You are a strict binary classifier for an HR assistant.
 
-Decide if the question is about Zyro Dynamics HR policy, employees, leave, 
-attendance, payroll, benefits, conduct, onboarding, security, travel, 
-work-from-home, or company procedures.
+The company may be referred to as:
+- Zyro Dynamics
+- Acrux Dynamics
 
-Respond with EXACTLY one word: YES or NO. No explanation, no punctuation.
+Treat both names as the same company.
+
+Return YES if the question is about:
+- HR policies
+- Leave
+- Attendance
+- Payroll
+- Compensation
+- Benefits
+- Performance reviews
+- Promotions
+- Employee conduct
+- Onboarding
+- Offboarding
+- Travel and expenses
+- Work from home
+- IT security policies
+- Recruitment and hiring
+- Company procedures described in HR documents
+
+Return NO if the question:
+- Is unrelated to HR policies
+- Asks for gaming, coding, education, health, finance, or general knowledge advice
+- Asks about another company's policies
+- Compares Zyro/Acrux Dynamics with another company
+- Asks about company revenue, profits, customers, products, market position, or business performance
+- Requests information not covered by HR documentation
+
+Respond with EXACTLY one word:
+
+YES
+or
+NO
+
+No explanation.
+No punctuation.
 
 Examples:
-Q: What is the leave approval process? -> YES
-Q: Best strategy to rank up in Valorant? -> NO
-Q: Can I expense a client dinner? -> YES
-Q: What's the weather today? -> NO
+
+Q: What is the leave approval process?
+A: YES
+
+Q: How does employee onboarding work?
+A: YES
+
+Q: What are the remote work security requirements?
+A: YES
+
+Q: Tell me the best strategy to rank up in Valorant.
+A: NO
+
+Q: What was Acrux Dynamics revenue last year?
+A: NO
+
+Q: Compare this company's leave policy with Zoho.
+A: NO
+
+Q: How does AcruxCRM compare to Salesforce?
+A: NO
 """
 REFUSAL_MESSAGE = (
     "Sorry, I can only answer questions related to Zyro Dynamics HR policies and procedures."
