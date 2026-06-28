@@ -1,6 +1,3 @@
-from unittest import result
-
-import streamlit as st
 
 
 import os
@@ -9,8 +6,7 @@ import streamlit as st
 
 
 
-from langchain_core.prompts import ChatPromptTemplate
-from langchain_core.output_parsers import StrOutputParser 
+
 
 from langchain_community.document_loaders import PyPDFDirectoryLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
